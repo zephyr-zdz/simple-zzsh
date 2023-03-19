@@ -15,19 +15,7 @@ void execute_command(char *args[], const int *p_in, const int *p_out, const int 
 void print_help();
 void parse_command(char *line, char **args);
 
-int main(int argc, char *argv[]) {
-    // Give help information
-    int opt;
-    if ((opt = getopt(argc, argv, "h")) != -1) {
-        switch (opt) {
-            case 'h':
-                print_help();
-                exit(0);
-            default:
-                fprintf(stderr, "Usage: %s [-h]\n", argv[0]);
-                exit(1);
-        }
-    }
+int main() {
     // Read command buffer
     char buffer[MAX_BUFFER_SIZE];
     int in = STDIN_FILENO; // input
@@ -42,6 +30,10 @@ int main(int argc, char *argv[]) {
         if (strcmp(buffer, "exit\n") == 0) { // exit
             printf("Bye!:)\n");
             break;
+        }
+        if (strcmp(buffer, "help\n") == 0) { // help
+            print_help();
+            continue;
         }
         int buffer_len = strlen(buffer);
         if (buffer_len > 0 && buffer[buffer_len - 1] == '\n') { // remove '\n'
@@ -211,8 +203,6 @@ void execute_command(char *args[], const int *p_in, const int *p_out, const int 
 void print_help() {
     printf("Usage: zzsh [OPTION] [FILE] [ARG] [<>|] ...\n");
     printf("A simple shell that supports basic file redirection and piping.\n");
-    printf("\nOptions:\n");
-    printf(" -h\tPrint this help information.\n");
     printf("\nRedirection:\n");
     printf(" <\tRead input from a file.\n");
     printf(" >\tWrite output to a file (overwrite).\n");
