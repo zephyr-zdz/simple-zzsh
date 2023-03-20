@@ -28,13 +28,15 @@
 2. `>`：将输出写入文件中。如果文件存在，则会被覆盖。例如：`ls > output.txt`。
 3. `>>`：将输出附加到文件中。如果文件不存在，则会创建文件。例如：`echo "hello" >> output.txt`。
 4. `2>`：将错误输出写入文件中。例如：`ls no_such_file 2> error.txt`。
+5. `n>`：将文件描述符为n的输出写入文件中。例如：`ls no_such_file 2> error.txt`。
+6. `n>>`：将文件描述符为n的输出附加到文件中。例如：`ls no_such_file 2>> error.txt`。
 
 ## 管道
 
 管道是将一个命令的输出作为另一个命令的输入的操作。该程序支持管道操作，例如：
 
 ```bash
-ls -l | grep ".txt" | wc -l
+ls -l | grep txt | wc -l
 ```
 
 

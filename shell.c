@@ -45,7 +45,7 @@ int main() {
             buffer[buffer_len - 1] = '\0';
         }
         char *args[MAX_ARGS];
-        parse_command(buffer, args);
+        parse_command(buffer, args); // e.g.: ls -l | wc -l -> args = {"ls", "-l", "|", "wc", "-l", NULL}
         handle_redirection(args, &in, &out, &append, &err);
         if (args[0] == NULL) {
             continue;
@@ -55,7 +55,7 @@ int main() {
     return 0;
 }
 
-void parse_command(char *line, char **args) {
+void parse_command(char *line, char **args) { // parse command line into arguments
     int argc = 0;
     char *token, *save_ptr;
     token = strtok_r(line, " ", &save_ptr);
@@ -66,7 +66,7 @@ void parse_command(char *line, char **args) {
     args[argc] = NULL;
 }
 
-int find_pipe(char **args) {
+int find_pipe(char **args) { // find pipe symbol in args
     int i = 0;
     while (args[i] != NULL) {
         if (strcmp(args[i], "|") == 0) {
@@ -77,7 +77,7 @@ int find_pipe(char **args) {
     return -1;
 }
 
-void execute_pipeline(char **args, int in, int out, int err) {
+void execute_pipeline(char **args, int in, int out, int err) { // from left to right execute commands
     int pipe_loc = find_pipe(args);
 
     if (pipe_loc == -1) {
@@ -115,7 +115,7 @@ void handle_redirection(char *args[], int *p_in, int *p_out, int *p_append, int 
     int in = *p_in, out = *p_out, append = *p_append, err = *p_err;
     int argc = 0, n, n_append;
     while (args[argc] != NULL) {
-        if (strcmp(args[argc], "<") == 0) {
+        if (strcmp(args[argc], "<") == 0) { // input redirection
             in = open(args[argc + 1], O_RDONLY);
             if (in < 0) {
                 perror("open");
@@ -123,7 +123,7 @@ void handle_redirection(char *args[], int *p_in, int *p_out, int *p_append, int 
             }
             args[argc] = NULL;
             argc++;
-        } else if (strcmp(args[argc], ">") == 0) {
+        } else if (strcmp(args[argc], ">") == 0) { // output redirection
             out = open(args[argc + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
             if (out < 0) {
                 perror("open");
@@ -131,7 +131,7 @@ void handle_redirection(char *args[], int *p_in, int *p_out, int *p_append, int 
             }
             args[argc] = NULL;
             argc++;
-        } else if (strcmp(args[argc], ">>") == 0) {
+        } else if (strcmp(args[argc], ">>") == 0) { // output redirection with append
             out = open(args[argc + 1], O_WRONLY | O_CREAT | O_APPEND, 0644);
             if (out < 0) {
                 perror("open");
@@ -220,11 +220,10 @@ void execute_command(char *args[], const int *p_in, const int *p_out, const int 
             close(err);
         }
 
-        // 恢复原始的文件描述符
+        // Restore stdin, stdout, stderr
         dup2(orig_stdin, STDIN_FILENO);
         dup2(orig_stdout, STDOUT_FILENO);
         dup2(orig_stderr, STDERR_FILENO);
-
         waitpid(pid, NULL, 0); // Wait for child process
     }
 }
